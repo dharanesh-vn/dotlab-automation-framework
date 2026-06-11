@@ -22,12 +22,13 @@ public class CourseBoardPage {
     
     private final By searchInputField = By.xpath("//input[@placeholder='Search courses...']");
     
-    // Exact structural matches for the raw DOM layouts you provided
+    // Exact structural matches for the raw DOM layouts
     private final By topicAccordionHeader = By.xpath("//div[contains(@class, 'cursor-pointer')]//div[text()='C Fundamentals'] | //*[contains(text(), 'C Fundamentals')]/ancestor::div[contains(@class, 'cursor-pointer')]");
     private final By subTopicLessonItem = By.xpath("//p[contains(text(), 'Keywords, Identifiers, Constants, Variables, Data Types')] | //div[contains(@class, 'cursor-pointer')]//p[contains(., 'Keywords')]");
     
-    // Dynamic tab switching based on visible text layout labels
-    private final String tabSelectorPattern = "//button[normalize-space(.)='%s'] | //button[contains(text(), '%s')]";
+    // ==================== UPDATED CORE TAB LOCATOR PATTERN ====================
+    // Targets the buttons explicitly inside the flexible workspace sub-navigation bar layout
+    private final String tabSelectorPattern = "//button[contains(normalize-space(.), '%s')] | //button[descendant-or-self::text()[contains(., '%s')]]";
     
     private final By chartVisualNodes = By.xpath("//*[local-name()='svg']//*[local-name()='rect' or local-name()='path' and contains(@class, 'apexcharts')] | //canvas");
     private final By leaderboardBtn = By.xpath("//button[contains(., 'Leaderboard') or contains(., 'View')]");
@@ -97,7 +98,6 @@ public class CourseBoardPage {
     }
 
     public void expandTopicAccordion() throws InterruptedException {
-        // Enforce using the updated class global selector variable explicitly
         WebElement header = wait.until(ExpectedConditions.presenceOfElementLocated(this.topicAccordionHeader));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", header);
         Thread.sleep(1200);
@@ -112,7 +112,6 @@ public class CourseBoardPage {
     }
 
     public void selectSubTopicLesson() throws InterruptedException {
-        // FIXED: Explicitly maps the corrected layout string variable down into execution space
         WebElement lesson = wait.until(ExpectedConditions.presenceOfElementLocated(this.subTopicLessonItem));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", lesson);
         Thread.sleep(1200);
@@ -126,15 +125,24 @@ public class CourseBoardPage {
         Thread.sleep(4000);
     }
 
+    // ==================== INTERACTION FOR WORKSPACE SUB-TABS ====================
     public void switchWorkspaceSubTab(String tabLabel) throws InterruptedException {
+        // Generates clean structural XPaths dynamically for Dashboard, Prepare, Practice, and Discussion
         By contextualTab = By.xpath(String.format(tabSelectorPattern, tabLabel, tabLabel));
-        WebElement tabBtn = wait.until(ExpectedConditions.elementToBeClickable(contextualTab));
+        WebElement tabBtn = wait.until(ExpectedConditions.presenceOfElementLocated(contextualTab));
+        
+        // Handle scrolling layout adjustments seamlessly
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", tabBtn);
+        Thread.sleep(1000);
+        
+        WebElement clickableTab = wait.until(ExpectedConditions.elementToBeClickable(contextualTab));
         try {
-            tabBtn.click();
+            clickableTab.click();
         } catch (Exception e) {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", tabBtn);
+            // Safe fallback bypass if layout animations interfere with standard clicks
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", clickableTab);
         }
-        Thread.sleep(2000);
+        Thread.sleep(2500);
     }
 
     public void interactWithDashboardAnalytics() {
@@ -221,6 +229,7 @@ public class CourseBoardPage {
 
     public void terminateSessionSecurely() {
         try {
+            // Safe tracking verification checks
             WebElement profile = wait.until(ExpectedConditions.elementToBeClickable(profileDropdownTrigger));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", profile);
             try { profile.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", profile); }
