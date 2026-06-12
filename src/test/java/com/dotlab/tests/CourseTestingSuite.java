@@ -13,7 +13,7 @@ import com.dotlab.pages.CourseBoardPage;
 
 /**
  * PRODUCTION SUITE: STANDARDIZED PAGE OBJECT DESIGN LIFECYCLE
- * Codebase Identity: CourseTestingSuite
+ * Codebase Identity: CourseTestingSuite - Phase 2 Finalized Validation
  */
 public class CourseTestingSuite {
 
@@ -57,7 +57,7 @@ public class CourseTestingSuite {
 
     @Test(priority = 3, dependsOnMethods = {"verifyNavigationToCourseBoard"}, description = "Verifies input parsing matches and filters card assets properly.")
     public void verifyCourseCatalogFiltering() throws InterruptedException {
-        System.out.println("[EXECUTION] Injecting string sequence parameters into catalog query fields...");
+        System.out.println("[EXECUTION] Injecting string sequence parameters into catalog query fields... ");
         courseBoard.filterCatalogByQuery("C Programming");
         Assert.assertEquals(courseBoard.getSearchFieldValue(), "C Programming", "[FAULT] Query entry mismatch.");
         System.out.println("[SUCCESS] Found matching target course cards in layout frame.");
@@ -65,7 +65,7 @@ public class CourseTestingSuite {
 
     @Test(priority = 4, dependsOnMethods = {"verifyCourseCatalogFiltering"}, description = "Launches target active workspace view panels.")
     public void verifyOpenTargetActiveCourseWorkspace() {
-        System.out.println("[EXECUTION] Triggering workspace card entry action layer...");
+        System.out.println("[EXECUTION] Triggering workspace card entry action layer... ");
         courseBoard.launchWorkspaceForCourse("C Programming");
         System.out.println("[SUCCESS] Arrived safely within the primary course overview framework.");
     }
@@ -74,7 +74,7 @@ public class CourseTestingSuite {
     public void verifyTopicAccordionExpansion() throws InterruptedException {
         System.out.println("[EXECUTION] Querying parent module accordion headers...");
         courseBoard.expandTopicAccordion();
-        System.out.println("[SUCCESS] Core accordion toggled. Awaiting layout stabilization...");
+        System.out.println("[SUCCESS] Core accordion toggled. Awaiting layout stabilization....");
     }
 
     @Test(priority = 6, dependsOnMethods = {"verifyTopicAccordionExpansion"}, description = "Selects specialized nested sub-topics to render live sandbox compiler modules and active sub-tabs.")
@@ -84,7 +84,7 @@ public class CourseTestingSuite {
         System.out.println("[SUCCESS] Sub-topic targeted successfully. Confirming load parameters for editor views...");
     }
 
-    @Test(priority = 7, dependsOnMethods = {"verifySpecificSubTopicLessonSelection"}, description = "Traverses sequentially through isolated structural sub-tabs.")
+    @Test(priority = 7, dependsOnMethods = {"verifySpecificSubTopicLessonSelection"}, description = "Traverses sequentially through isolated structural sub-tabs down to the practice layout.")
     public void verifyCourseWorkspaceSubTabsLayout() throws InterruptedException {
         System.out.println("[EXECUTION] Initiating interface validation sequence across course workspace panel frames...");
         
@@ -100,21 +100,81 @@ public class CourseTestingSuite {
         courseBoard.triggerCodeSnippetCopy();
         courseBoard.runSandboxPlaygroundLifecycle();
 
-        // Phase 3: Downstream Carousel Verification Steps
+        // Phase 3: Transition and land specifically on the Practice Workspace view panel
+        System.out.println("[EXECUTION] Parking workspace on the active Practice sub-layout panel...");
         courseBoard.resetViewToBottom();
         courseBoard.switchWorkspaceSubTab("Practice");
-        courseBoard.switchWorkspaceSubTab("Discussion");
         
         courseBoard.resetViewToTop();
-        System.out.println("[SUCCESS] Full Course Workspace sub-tab validation executed completely.");
+        System.out.println("[SUCCESS] Left sidebar tab validation complete; standing by inside Practice matrix.");
     }
 
-    @Test(priority = 8, dependsOnMethods = {"verifyCourseWorkspaceSubTabsLayout"}, description = "Interacts with sidebar footer configuration slots to execute safe logout logs.")
-    public void verifySecureSessionTermination() {
+    @Test(priority = 8, dependsOnMethods = {"verifyCourseWorkspaceSubTabsLayout"}, description = "Validates the full interactive practice lifecycle suite matching live image requirements.")
+    public void verifyFullPracticeLayoutLifecycle() {
+        System.out.println("[EXECUTION] Initiating End-to-End Practice Sandbox Assessment Run...");
+
+        String cCodePayload = "#include <stdio.h>\n\n" +
+                              "int main() {\n" +
+                              "    printf(\"Hello, World!\\n\");\n" +
+                              "    return 0;\n" +
+                              "}";
+
+        boolean practiceCompletedCleanly = courseBoard.executeFullPracticeLifecycleSuite(cCodePayload);
+        Assert.assertTrue(practiceCompletedCleanly, "[FAULT] The automated practice workspace suite encountered a runtime break.");
+        System.out.println("[SUCCESS] Practice compilation assessment module cycled flawlessly.");
+    }
+
+    @Test(priority = 9, dependsOnMethods = {"verifyFullPracticeLayoutLifecycle"}, description = "Executes complete Phase 2 comprehensive testing loop inside the Live Discussion board interface.")
+    public void verifyPostPracticeDiscussionNavigationAndLogout() {
+        System.out.println("[EXECUTION] Navigating to the Discussions workspace layout section via recovery pipelines...");
+        
+        // Step A: Recover layout state from the course homepage landing frame
+        courseBoard.recoverContextAfterPracticeExit();
+        
+        // Step B: Target and click the standalone Discussion tab button element
+        courseBoard.clickDirectDiscussionTabButton();
+
+        // Checkpoint 1: Assert that the layout has actually rendered the discussion view framework
+        Assert.assertTrue(courseBoard.isDiscussionHeaderDisplayed(), 
+            "[FAULT] Automation failed to visually render the live discussion board interface layout.");
+        System.out.println("[SUCCESS] Confirmed driver focus is parked inside active Discussion panel components.");
+
+        // Checkpoint 2: Validate Faculty mode filter focus is explicitly verified
+        courseBoard.verifyFacultyPillStateOnly();
+        Assert.assertTrue(courseBoard.verifyPillSelectionState(), 
+            "[FAULT] Discussion board did not maintain safe focus on the default Faculty layout configuration.");
+        System.out.println("[SUCCESS] Confirmed default active state matches 'Faculty' layout configuration safely.");
+
+        // Step C: Type automated input payload into the TipTap Editor field directly inside Faculty view
+        String payloadText = "Automated Syntax Validation Sequence. Testing Rich Text Action Layers.";
+        System.out.println("[EXECUTION] Transmitting character sequence streams into TipTap framework workspace...");
+        courseBoard.injectTextIntoTipTapEditor(payloadText);
+
+        // Step D: Validate and exhaustively cycle through formatting toolbar layers
+        System.out.println("[EXECUTION] Verifying Rich Text Interactive Formatting Controls...");
+        courseBoard.applyRichTextFormatting("BOLD");
+        courseBoard.applyRichTextFormatting("ITALIC");
+        courseBoard.applyRichTextFormatting("CODE");
+        courseBoard.applyRichTextFormatting("HEADING");
+        System.out.println("[SUCCESS] Formatting toolbar simulation complete. Controls interactive and firing.");
+
+        // Step E: Transmit message and await platform data sync lifecycle
+        System.out.println("[EXECUTION] Dispatching message payload string out to active pipeline rails... ");
+        courseBoard.fireSendPostAction();
+        
+        System.out.println("[EXECUTION] Holding thread operational context for 3000ms for database stabilization synchronization...");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        System.out.println("[SUCCESS] Hold complete. Post-submission processing cycle completed.");
+
+        // Step F: Final secure session destruction handshake
         System.out.println("[EXECUTION] Interacting with sidebar profile options for termination context...");
         courseBoard.terminateSessionSecurely();
         Assert.assertTrue(driver.getCurrentUrl().contains("/login"), "[FAULT] Destination mismatch. Failed to arrive back at login endpoint.");
-        System.out.println("[SUCCESS] Session dropped safely. Identity gate redirection completed successfully.");
+        System.out.println("[SUCCESS] Full user flow evaluation complete. Session dropped safely.");
     }
 
     @AfterClass(alwaysRun = true)

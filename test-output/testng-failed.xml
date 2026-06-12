@@ -5,15 +5,16 @@
     <classes>
       <class name="com.dotlab.tests.CourseTestingSuite">
         <methods>
-          <include name="setupSuiteEnvironment"/>
           <include name="verifyCourseCatalogFiltering"/>
-          <include name="verifySecureSessionTermination"/>
+          <include name="setupSuiteEnvironment"/>
           <include name="verifyCourseWorkspaceSubTabsLayout"/>
           <include name="verifyOpenTargetActiveCourseWorkspace"/>
           <include name="verifyTopicAccordionExpansion"/>
           <include name="verifySpecificSubTopicLessonSelection"/>
+          <include name="verifyFullPracticeLayoutLifecycle"/>
           <include name="verifyNavigationToCourseBoard"/>
           <include name="tearDownSuiteContext"/>
+          <include name="verifyPostPracticeDiscussionNavigationAndLogout"/>
           <include name="verifySecureLoginHandshake"/>
         </methods>
       </class> <!-- com.dotlab.tests.CourseTestingSuite -->

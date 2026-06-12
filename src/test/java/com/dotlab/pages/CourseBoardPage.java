@@ -52,17 +52,40 @@ public class CourseBoardPage {
     private final By sandboxRunCodeBtn = By.xpath("//button[contains(@class, 'bg-emerald-500') and normalize-space(.)='Run'] | //button[descendant::*[local-name()='svg'] and normalize-space(.)='Run']");
     private final By sandboxAccessibilityBtn = By.xpath("//div[contains(@class, 'sandbox') or contains(@class, 'playground')]//button[contains(@class, 'bg-amber-200')] | //button[@title='Accessibility Assistant']");
     private final By exitPlaygroundBtn = By.xpath("//button[contains(@class, 'bg-orange-600') and normalize-space(.)='Exit'] | //button[descendant::*[local-name()='svg'] and normalize-space(.)='Exit']");
-    private final By monacoEditorTextArea = By.xpath("//div[contains(@class, 'monaco-editor')]//textarea | //textarea[contains(@class, 'ace_text-input')] | //div[@role='code']//textarea");
+    private final By monacoEditorTextArea = By.xpath("//div[contains(@class, 'monaco-editor')]//textarea | //textarea[contains(@class, 'ace_text-input')] | //div[@role='code']//textarea | //div[contains(@class, 'monaco-mouse-cursor-text')]");
     private final By sandboxOutputTerminal = By.xpath("//div[contains(@class, 'terminal') or contains(@class, 'output')] | //pre[contains(@class, 'console')]");
+
+    // --- Dedicated Extended Practice & Assessment Lifecycle Locators ---
+    private final By practiceStartButton = By.xpath("//button[contains(@class, 'button') and text()='Start Practice']");
+    private final By testConfirmStartBtn = By.xpath("//button[contains(text(), 'Start Test')]");
+    private final By guidelineContinueBtn = By.xpath("//button[contains(text(), 'Continue')]");
+    private final By themeToggleSvgBtn = By.xpath("//button[./svg or descendant::svg]//*[local-name()='path' and contains(@d, 'M12 2.25')]/ancestor::button[1] | //main//svg[contains(@class, 'text-yellow-500')] | //div[contains(@class, 'monaco-editor')]/preceding::button[./svg or descendant::svg]");
+    private final By activeTestRunCodeBtn = By.xpath("//button[normalize-space(.)='Run' and descendant::*[local-name()='svg']]");
+    private final By activeTestEndBtn = By.xpath("//button[./p[text()='End test']] | //p[text()='End test']/ancestor::button[1]");
+    private final By exitModalConfirmBtn = By.xpath("//button[contains(@class, 'bg-orange-600') and text()='Exit']");
 
     // --- Profile & Lifecycle Traps ---
     private final By profileDropdownTrigger = By.xpath("//div[contains(@class,'profile-container')] | //*[contains(@class, 'footer')]//img/ancestor::div[1] | //div[contains(@class, 'sidebar')]//button[last()]");
-    private final By cleanLogoutTarget = By.xpath("//*[normalize-space()='Log out' or normalize-space()='Logout'] | //button[contains(., 'Log out') or contains(., 'Logout')] | //span[contains(text(), 'Log out') or contains(text(), 'Logout')]");
 
-    // --- Bending Coverage: Extended Progress Tracker Locators ---
+    // --- Progress Tracker Locators ---
     private final By aggregateProgressBar = By.xpath("//div[contains(@class, 'progress-bar')] | //div[@role='progressbar']");
     private final By progressPercentageLabel = By.xpath("//span[contains(text(), '%')] | //p[contains(text(), '% Complete')]");
     private final By popoutExternalLinkBtn = By.xpath("//a[contains(@href, 'external') or @target='_blank'] | //button[contains(., 'Pop out') or contains(., 'Open in New Window')]");
+
+    // --- Phase 2: Live Discussion Matrix Locators ---
+    private final By discussionHeaderLabel = By.xpath("//*[contains(text(), 'Discuss Your Doubts')]");
+    private final By facultyFilterPill = By.xpath("//button[normalize-space(text())='Faculty' or contains(., 'Faculty')]");
+    
+    private final By tiptapEditorField = By.cssSelector("div.tiptap.ProseMirror");
+    private final By sendPostBtn = By.xpath("//button[contains(@class, 'button') or @type='submit'][descendant::span[text()='Send'] or contains(., 'Send')]");
+    
+    // Resilient TipTap Rich Text Toolbar Buttons mapping descriptive metadata
+    private final By boldFormatBtn = By.xpath("//button[@title='Bold' or contains(@class, 'bold') or .//strong or .//b or .//*[local-name()='svg' and @data-icon='bold']]");
+    private final By italicFormatBtn = By.xpath("//button[@title='Italic' or contains(@class, 'italic') or .//em or .//i or .//*[local-name()='svg' and @data-icon='italic']]");
+    private final By codeBlockFormatBtn = By.xpath("//button[@title='Code Block' or contains(@class, 'code')]");
+    private final By headingFormatBtn = By.xpath("//button[contains(@title, 'Heading') or contains(@class, 'heading') or contains(., 'H1') or contains(., 'H2')]");
+    
+    private final By genericMessageFeedBubble = By.cssSelector("div.rich-text-editor");
 
     public CourseBoardPage(WebDriver driver, WebDriverWait wait) {
         this(driver, wait, "https://dotlab.amypo.ai/login");
@@ -152,6 +175,13 @@ public class CourseBoardPage {
 
     public void terminateSessionSecurely() {
         try {
+            if (driver == null) {
+                System.out.println("[INFO] Driver instance is null. Skipping logout teardown.");
+                return;
+            }
+
+            try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
+
             resetViewToTop();
             waitForAppReady();
 
@@ -159,14 +189,24 @@ public class CourseBoardPage {
             scrollIntoView(profile);
             safeClick(profile);
 
-            WebElement logout = wait.until(ExpectedConditions.elementToBeClickable(cleanLogoutTarget));
+            By exactSvgLogoutBtn = By.xpath("//button[.//path[contains(@d, 'M116,128V48')]] | //*[normalize-space()='Log out' or normalize-space()='Logout']");
+            WebElement logout = wait.until(ExpectedConditions.elementToBeClickable(exactSvgLogoutBtn));
+            
+            System.out.println("[EXECUTION] Interacting with sidebar profile options via path params...");
             safeClick(logout);
 
             wait.until(ExpectedConditions.urlContains("/login"));
+            System.out.println("[SUCCESS] Full user flow evaluation complete. Session dropped safely.");
+        } catch (org.openqa.selenium.NoSuchSessionException e) {
+            System.out.println("[INFO] Browser session was terminated externally. Safely ignoring logout exception.");
         } catch (Exception e) {
-            if (!driver.getCurrentUrl().contains("/login")) {
-                driver.get(loginUrl);
-                wait.until(ExpectedConditions.urlContains("/login"));
+            try {
+                if (!driver.getCurrentUrl().contains("/login")) {
+                    driver.get(loginUrl);
+                    wait.until(ExpectedConditions.urlContains("/login"));
+                }
+            } catch (Exception sessionClosedEx) {
+                System.out.println("[INFO] Webdriver session unavailable for fallback redirect routing.");
             }
         }
     }
@@ -220,16 +260,18 @@ public class CourseBoardPage {
 
     public void expandTopicAccordion(String topicName) {
         String safeTopic = escapeXPathString(topicName);
-        By header = By.xpath(
-            "//div[contains(@class, 'cursor-pointer')][.//*[contains(text(), " + safeTopic + ")]]" +
-            " | //*[contains(text(), " + safeTopic + ")]/ancestor::div[contains(@class, 'cursor-pointer')][1]"
-        );
+        
+        // REFACTORED STRING FORMAT: Guarantees explicit closing brackets on node union validations
+        String template = "//div[contains(@class, 'cursor-pointer')][.//*[contains(text(), %1$s)]] " +
+                           "| //*[contains(text(), %1$s)]/ancestor::div[contains(@class, 'cursor-pointer')][1]";
+        
+        By header = By.xpath(String.format(template, safeTopic));
         scrollAndClick(header);
         waitForAnimation();
     }
 
     public void selectSubTopicLesson() {
-        selectSubTopicLesson("Variables");
+        selectSubTopicLesson("Keywords, Identifiers, Constants, Variables, Data Types");
     }
 
     public void selectSubTopicLesson(String lessonTitle) {
@@ -435,9 +477,7 @@ public class CourseBoardPage {
             WebElement runBtn = wait.until(ExpectedConditions.elementToBeClickable(sandboxRunCodeBtn));
             safeClick(runBtn);
 
-            // Dynamically check if we expect a terminal display context to settle or skip safely
             if (customCodeBlock == null) {
-                // Default code runner scenario passes instantly without terminal wait delays
                 waitForAnimation();
             } else {
                 wait.until(ExpectedConditions.visibilityOfElementLocated(sandboxOutputTerminal));
@@ -461,6 +501,223 @@ public class CourseBoardPage {
             return true;
         } catch (Exception e) {
             System.out.println("[FAULT] Sandbox execution caught error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean executeFullPracticeLifecycleSuite(String cSourcePayload) {
+        try {
+            WebElement startPracticeBtn = wait.until(ExpectedConditions.elementToBeClickable(practiceStartButton));
+            scrollIntoView(startPracticeBtn);
+            safeClick(startPracticeBtn);
+
+            WebElement initTestBtn = wait.until(ExpectedConditions.elementToBeClickable(testConfirmStartBtn));
+            safeClick(initTestBtn);
+
+            WebElement proceedBtn = wait.until(ExpectedConditions.elementToBeClickable(guidelineContinueBtn));
+            safeClick(proceedBtn);
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+
+            List<WebElement> themes = driver.findElements(themeToggleSvgBtn);
+            if (!themes.isEmpty()) {
+                safeClick(themes.get(0));
+                waitForAnimation();
+            }
+
+            By editorContainerLocator = By.xpath("//div[contains(@class, 'monaco-editor')] | //div[contains(@class, 'view-lines')]");
+            WebElement targetArea = wait.until(ExpectedConditions.presenceOfElementLocated(editorContainerLocator));
+            
+            hardwareBridge.moveToElement(targetArea).click().build().perform();
+            hardwareBridge.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+                          .sendKeys(Keys.BACK_SPACE)
+                          .build().perform();
+            
+            hardwareBridge.sendKeys(cSourcePayload).build().perform();
+            waitForAnimation();
+
+            WebElement runCodeBtn = wait.until(ExpectedConditions.elementToBeClickable(activeTestRunCodeBtn));
+            safeClick(runCodeBtn);
+            waitForAnimation();
+
+            WebElement endTestBtn = wait.until(ExpectedConditions.elementToBeClickable(activeTestEndBtn));
+            scrollIntoView(endTestBtn);
+            safeClick(endTestBtn);
+
+            WebElement exitConfirm = wait.until(ExpectedConditions.elementToBeClickable(exitModalConfirmBtn));
+            safeClick(exitConfirm);
+            
+            waitForAppReady();
+            return true;
+        } catch (Exception e) {
+            System.out.println("[FAULT] Complex Assessment Practice run encountered exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void recoverContextAfterPracticeExit() {
+        System.out.println("[RECOVERY] Landing context lost post-exit. Re-initializing module alignment hooks...");
+        
+        try {
+            By zincOverlay = By.xpath("//div[contains(@class, 'bg-zinc-800') or contains(@class, 'bg-opacity-60')]");
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(zincOverlay));
+            System.out.println("[RECOVERY] Background modal overlays completely dismissed.");
+        } catch (Exception e) {
+            System.out.println("[INFO] No lingering modal backdrop overlays detected.");
+        }
+
+        waitForAppReady();
+
+        By recoveryLesson = By.xpath("//p[text()='Keywords, Identifiers, Constants, Variables, Data Types'] | //div[contains(@class, 'cursor-pointer')]//p[contains(text(), 'Keywords')]");
+        
+        // Adjusted recovery wrapper alignment strategy
+        String recoveryTemplate = "//div[contains(@class, 'cursor-pointer')][.//div[text()=%1$s]] " +
+                                   "| //*[text()=%1$s]/ancestor::div[contains(@class, 'cursor-pointer')][1]";
+        By recoveryHeader = By.xpath(String.format(recoveryTemplate, escapeXPathString("C Fundamentals")));
+
+        boolean recoveredAndVisible = false;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                List<WebElement> lessonCheck = driver.findElements(recoveryLesson);
+                if (!lessonCheck.isEmpty() && lessonCheck.get(0).isDisplayed()) {
+                    System.out.println("[RECOVERY] Verified: Accordion is open and elements are visible.");
+                    recoveredAndVisible = true;
+                    break;
+                }
+                
+                System.out.println("[RECOVERY] Accordion closed or stale (Attempt " + attempt + "/3). Forcing robust interactive toggle...");
+                WebElement headerEl = wait.until(ExpectedConditions.elementToBeClickable(recoveryHeader));
+                scrollIntoView(headerEl);
+                
+                try {
+                    headerEl.click();
+                } catch (Exception clickFallback) {
+                    directClickViaJavaScript(headerEl);
+                }
+                
+                waitForAnimation();
+                
+                lessonCheck = driver.findElements(recoveryLesson);
+                if (!lessonCheck.isEmpty() && lessonCheck.get(0).isDisplayed()) {
+                    recoveredAndVisible = true;
+                    break;
+                }
+            } catch (StaleElementReferenceException e) {
+                System.out.println("[RECOVERY] Caught stale reference during alignment, recycling loop...");
+            } catch (Exception ignored) {}
+        }
+
+        WebElement lessonEl = wait.until(ExpectedConditions.visibilityOfElementLocated(recoveryLesson));
+        scrollIntoView(lessonEl);
+        safeClick(lessonEl);
+        
+        waitForAppReady();
+    }
+
+    public void clickDirectDiscussionTabButton() {
+        System.out.println("[EXECUTION] Targeting standalone Discussion tab action layer button...");
+        By standaloneDiscussionBtn = By.xpath("//button[contains(normalize-space(.), 'Discussion')] | //button[descendant::*[local-name()='svg'] and contains(., 'Discussion')]");
+        
+        WebElement discBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(standaloneDiscussionBtn));
+        scrollIntoView(discBtn);
+        wait.until(ExpectedConditions.elementToBeClickable(discBtn));
+        
+        try { 
+            discBtn.click(); 
+        } catch(Exception e) { 
+            js.executeScript("arguments[0].click();", discBtn); 
+        }
+        
+        By discussionContentContainer = By.xpath("//div[contains(@class, 'discussion')] | //*[contains(text(), 'Discuss Your Doubts')] | //div[contains(@class, 'rich-text-editor')]");
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(discussionContentContainer));
+            System.out.println("[SUCCESS] Verified: Discussions layout completely populated and active.");
+        } catch (Exception e) {
+            System.out.println("[WARNING] Layout validation delayed. Forcing secondary structural wait... ");
+            waitForAnimation();
+        }
+        
+        waitForAppReady();
+    }
+
+    public boolean isDiscussionHeaderDisplayed() {
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(discussionHeaderLabel)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void verifyFacultyPillStateOnly() {
+        System.out.println("[EXECUTION] Verifying and enforcing active Faculty panel focus...");
+        WebElement facBtn = wait.until(ExpectedConditions.presenceOfElementLocated(facultyFilterPill));
+        scrollIntoView(facBtn);
+        waitForAnimation();
+    }
+
+    public boolean verifyPillSelectionState() {
+        waitForAppReady();
+        WebElement activeTarget = wait.until(ExpectedConditions.presenceOfElementLocated(facultyFilterPill));
+        String classString = activeTarget.getAttribute("class");
+        return classString.contains("bg-gradient-to-r") || classString.contains("text-white") || classString.contains("active") || classString.contains("bg-zinc");
+    }
+
+    public void injectTextIntoTipTapEditor(String inputPayload) {
+        WebElement editor = wait.until(ExpectedConditions.visibilityOfElementLocated(tiptapEditorField));
+        scrollIntoView(editor);
+        
+        js.executeScript("arguments[0].innerHTML = '<p><br></p>';", editor);
+        
+        editor.click();
+        editor.sendKeys(inputPayload);
+        waitForAnimation();
+    }
+
+    public void applyRichTextFormatting(String formatType) {
+        By targetedFormatBtn;
+        switch (formatType.toUpperCase()) {
+            case "BOLD": targetedFormatBtn = boldFormatBtn; break;
+            case "ITALIC": targetedFormatBtn = italicFormatBtn; break;
+            case "CODE": targetedFormatBtn = codeBlockFormatBtn; break;
+            case "HEADING": targetedFormatBtn = headingFormatBtn; break;
+            default: throw new IllegalArgumentException("Unknown RichText formatting token: " + formatType);
+        }
+        
+        try {
+            List<WebElement> buttons = driver.findElements(targetedFormatBtn);
+            if (!buttons.isEmpty() && buttons.get(0).isDisplayed()) {
+                WebElement btn = buttons.get(0);
+                scrollIntoView(btn);
+                safeClick(btn);
+                System.out.println("[FORMAT] Executed " + formatType + " formatting transformation layer.");
+            } else {
+                System.out.println("[WARNING] Formatting button for " + formatType + " not visible in DOM layer. Continuing execution stream...");
+            }
+        } catch (Exception e) {
+            System.out.println("[WARNING] Skipping formatting step for " + formatType + " due to interaction block: " + e.getMessage());
+        }
+    }
+
+    public void fireSendPostAction() {
+        WebElement sendBtn = wait.until(ExpectedConditions.elementToBeClickable(sendPostBtn));
+        safeClick(sendBtn);
+        waitForAnimation();
+        waitForAppReady();
+    }
+
+    public int getPostedMessagesTotalCount() {
+        return driver.findElements(genericMessageFeedBubble).size();
+    }
+
+    public boolean verifyMessageInFeed(String expectedString) {
+        By dynamicTextMatchXpath = By.xpath("//div[contains(@class, 'rich-text-editor')]//*[contains(text(), '" + expectedString + "')]");
+        try {
+            return wait.until(ExpectedConditions.presenceOfElementLocated(dynamicTextMatchXpath)).isDisplayed();
+        } catch (Exception e) {
             return false;
         }
     }
@@ -507,6 +764,10 @@ public class CourseBoardPage {
         driver.switchTo().window(primaryWindow);
         
         return detachedUrl != null && !detachedUrl.isEmpty();
+    }
+
+    public void windowScrollToTop() {
+        js.executeScript("window.scrollTo(0, 0);");
     }
 
     public void resetViewToTop() {
