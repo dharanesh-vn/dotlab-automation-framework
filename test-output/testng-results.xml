@@ -2,48 +2,48 @@
 <testng-results ignored="0" total="8" passed="8" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-06-12T09:45:40 IST" name="Default suite" finished-at="2026-06-12T09:46:22 IST" duration-ms="42498">
+  <suite started-at="2026-06-12T10:24:17 IST" name="Default suite" finished-at="2026-06-12T10:25:22 IST" duration-ms="64427">
     <groups>
     </groups>
-    <test started-at="2026-06-12T09:45:40 IST" name="Default test" finished-at="2026-06-12T09:46:22 IST" duration-ms="42498">
+    <test started-at="2026-06-12T10:24:17 IST" name="Default test" finished-at="2026-06-12T10:25:22 IST" duration-ms="64427">
       <class name="com.dotlab.tests.CourseTestingSuite">
-        <test-method is-config="true" signature="setupSuiteEnvironment()[pri:0, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:40 IST" name="setupSuiteEnvironment" finished-at="2026-06-12T09:45:42 IST" duration-ms="1856" status="PASS">
+        <test-method is-config="true" signature="setupSuiteEnvironment()[pri:0, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:17 IST" name="setupSuiteEnvironment" finished-at="2026-06-12T10:24:20 IST" duration-ms="2645" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setupSuiteEnvironment -->
-        <test-method signature="verifySecureLoginHandshake()[pri:1, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:42 IST" name="verifySecureLoginHandshake" description="Authenticates user credentials against the secure login endpoint." finished-at="2026-06-12T09:45:44 IST" duration-ms="2199" status="PASS">
+        <test-method signature="verifySecureLoginHandshake()[pri:1, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:20 IST" name="verifySecureLoginHandshake" description="Authenticates user credentials against the secure login endpoint." finished-at="2026-06-12T10:24:23 IST" duration-ms="3424" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifySecureLoginHandshake -->
-        <test-method signature="verifyNavigationToCourseBoard()[pri:2, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:44 IST" name="verifyNavigationToCourseBoard" description="Validates routing mechanics to the primary catalog layout screen." finished-at="2026-06-12T09:45:44 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifySecureLoginHandshake" duration-ms="314" status="PASS">
+        <test-method signature="verifyNavigationToCourseBoard()[pri:2, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:23 IST" name="verifyNavigationToCourseBoard" description="Validates routing mechanics to the primary catalog layout screen." finished-at="2026-06-12T10:24:24 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifySecureLoginHandshake" duration-ms="542" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyNavigationToCourseBoard -->
-        <test-method signature="verifyCourseCatalogFiltering()[pri:3, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:44 IST" name="verifyCourseCatalogFiltering" description="Verifies input parsing matches and filters card assets properly." finished-at="2026-06-12T09:45:45 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyNavigationToCourseBoard" duration-ms="967" status="PASS">
+        <test-method signature="verifyCourseCatalogFiltering()[pri:3, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:24 IST" name="verifyCourseCatalogFiltering" description="Verifies input parsing matches and filters card assets properly." finished-at="2026-06-12T10:24:25 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyNavigationToCourseBoard" duration-ms="1002" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyCourseCatalogFiltering -->
-        <test-method signature="verifyOpenTargetActiveCourseWorkspace()[pri:4, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:45 IST" name="verifyOpenTargetActiveCourseWorkspace" description="Launches target active workspace view panels." finished-at="2026-06-12T09:45:45 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyCourseCatalogFiltering" duration-ms="165" status="PASS">
+        <test-method signature="verifyOpenTargetActiveCourseWorkspace()[pri:4, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:25 IST" name="verifyOpenTargetActiveCourseWorkspace" description="Launches target active workspace view panels." finished-at="2026-06-12T10:24:25 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyCourseCatalogFiltering" duration-ms="284" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyOpenTargetActiveCourseWorkspace -->
-        <test-method signature="verifyTopicAccordionExpansion()[pri:5, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:45 IST" name="verifyTopicAccordionExpansion" description="Expands parent topic accordion wrappers to reveal nested child assignments." finished-at="2026-06-12T09:45:50 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyOpenTargetActiveCourseWorkspace" duration-ms="4272" status="PASS">
+        <test-method signature="verifyTopicAccordionExpansion()[pri:5, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:25 IST" name="verifyTopicAccordionExpansion" description="Expands parent topic accordion wrappers to reveal nested child assignments." finished-at="2026-06-12T10:24:30 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyOpenTargetActiveCourseWorkspace" duration-ms="4485" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyTopicAccordionExpansion -->
-        <test-method signature="verifySpecificSubTopicLessonSelection()[pri:6, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:50 IST" name="verifySpecificSubTopicLessonSelection" description="Selects specialized nested sub-topics to render live sandbox compiler modules and active sub-tabs." finished-at="2026-06-12T09:45:51 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyTopicAccordionExpansion" duration-ms="951" status="PASS">
+        <test-method signature="verifySpecificSubTopicLessonSelection()[pri:6, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:30 IST" name="verifySpecificSubTopicLessonSelection" description="Selects specialized nested sub-topics to render live sandbox compiler modules and active sub-tabs." finished-at="2026-06-12T10:24:30 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyTopicAccordionExpansion" duration-ms="796" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifySpecificSubTopicLessonSelection -->
-        <test-method signature="verifyCourseWorkspaceSubTabsLayout()[pri:7, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:45:51 IST" name="verifyCourseWorkspaceSubTabsLayout" description="Traverses sequentially through isolated structural sub-tabs." finished-at="2026-06-12T09:46:01 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifySpecificSubTopicLessonSelection" duration-ms="10851" status="PASS">
+        <test-method signature="verifyCourseWorkspaceSubTabsLayout()[pri:7, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:24:30 IST" name="verifyCourseWorkspaceSubTabsLayout" description="Traverses sequentially through isolated structural sub-tabs." finished-at="2026-06-12T10:25:01 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifySpecificSubTopicLessonSelection" duration-ms="30193" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifyCourseWorkspaceSubTabsLayout -->
-        <test-method signature="verifySecureSessionTermination()[pri:8, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:46:01 IST" name="verifySecureSessionTermination" description="Interacts with sidebar footer configuration slots to execute safe logout logs." finished-at="2026-06-12T09:46:22 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyCourseWorkspaceSubTabsLayout" duration-ms="20577" status="PASS">
+        <test-method signature="verifySecureSessionTermination()[pri:8, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:25:01 IST" name="verifySecureSessionTermination" description="Interacts with sidebar footer configuration slots to execute safe logout logs." finished-at="2026-06-12T10:25:21 IST" depends-on-methods="com.dotlab.tests.CourseTestingSuite.verifyCourseWorkspaceSubTabsLayout" duration-ms="20591" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- verifySecureSessionTermination -->
-        <test-method is-config="true" signature="tearDownSuiteContext()[pri:0, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T09:46:22 IST" name="tearDownSuiteContext" finished-at="2026-06-12T09:46:22 IST" duration-ms="262" status="PASS">
+        <test-method is-config="true" signature="tearDownSuiteContext()[pri:0, instance:com.dotlab.tests.CourseTestingSuite@51399530]" started-at="2026-06-12T10:25:21 IST" name="tearDownSuiteContext" finished-at="2026-06-12T10:25:22 IST" duration-ms="354" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDownSuiteContext -->
