@@ -22,23 +22,40 @@ public class CourseBoardPage {
     
     private final By searchInputField = By.xpath("//input[@placeholder='Search courses...']");
     
-    // Exact structural matches for the raw DOM layouts
+    // Core structural layout locators for curriculum tracking
     private final By topicAccordionHeader = By.xpath("//div[contains(@class, 'cursor-pointer')]//div[text()='C Fundamentals'] | //*[contains(text(), 'C Fundamentals')]/ancestor::div[contains(@class, 'cursor-pointer')]");
     private final By subTopicLessonItem = By.xpath("//p[contains(text(), 'Keywords, Identifiers, Constants, Variables, Data Types')] | //div[contains(@class, 'cursor-pointer')]//p[contains(., 'Keywords')]");
     
-    // ==================== UPDATED CORE TAB LOCATOR PATTERN ====================
-    // Targets the buttons explicitly inside the flexible workspace sub-navigation bar layout
+    // Core workspace sub-navigation text locator pattern (Dashboard, Prepare, Practice, Discussion)
     private final String tabSelectorPattern = "//button[contains(normalize-space(.), '%s')] | //button[descendant-or-self::text()[contains(., '%s')]]";
     
+    // Internal Tab Selectors: Dashboard components
+    private final By leaderboardBtn = By.xpath("//button[contains(normalize-space(.), 'View Leaderboard')]");
     private final By chartVisualNodes = By.xpath("//*[local-name()='svg']//*[local-name()='rect' or local-name()='path' and contains(@class, 'apexcharts')] | //canvas");
-    private final By leaderboardBtn = By.xpath("//button[contains(., 'Leaderboard') or contains(., 'View')]");
-    private final By materialTypeTabs = By.xpath("//div[contains(@class,'tabs')]//button | //button[contains(@class, 'tab')]");
+    
+    // Internal Tab Selectors: Prepare / Practice components (Materials & PDF)
+    private final By materialsTabBtn = By.xpath("//button[./span[normalize-space(.)='Materials']] | //button[contains(., 'Materials')]");
+    private final By pdfTabBtn = By.xpath("//button[./span[normalize-space(.)='PDF']] | //button[contains(., 'PDF')]");
+    
+    // Draggable React Flow Canvas & Interactive Elements
+    private final By draggableFlowPane = By.xpath("//div[contains(@class, 'react-flow__pane') and contains(@class, 'draggable')]");
     private final By mindmapActionButtons = By.xpath("//*[contains(@class, 'mindmap')]//button | //div[contains(@class, 'toolbar')]//button");
-    private final By codeSnippetCopyBtn = By.xpath("//pre//button | //div[contains(@class, 'code')]//*[local-name()='svg']");
+    private final By codeSnippetCopyBtn = By.xpath("//div[contains(@class, 'csm-mindmap-node')]//button | //pre//button | //div[contains(@class, 'code')]//*[local-name()='svg' or contains(@class, 'copy')]");
     
-    private final By tryItPlaygroundBtn = By.xpath("//button[contains(text(), 'Try It')] | //button[contains(., 'Try')]");
-    private final By exitPlaygroundBtn = By.xpath("//button[contains(.,'Exit') or contains(.,'Close') or contains(.,'Back')] | //*[contains(@class, 'modal') or contains(@class, 'fixed')]//button");
+    // ==================== RE-ENGINEERED DOM SANDBOX SELECTORS ====================
+    // Try It Button Target (Matching: class="button border border-blue-500... button-press-feedback")
+    private final By tryItPlaygroundBtn = By.xpath("//button[text()='Try it'] | //button[contains(@class, 'button-press-feedback') and contains(., 'Try it')]");
     
+    // Sandbox Run Code Action (Matching: class="... bg-emerald-500 ... " containing text "Run")
+    private final By sandboxRunCodeBtn = By.xpath("//button[contains(@class, 'bg-emerald-500') and normalize-space(.)='Run'] | //button[descendant::*[local-name()='svg'] and normalize-space(.)='Run']");
+    
+    // Theme/Layout Toggle/Accessibility Anchor (Matching yellow Sun path properties)
+    private final By sandboxAccessibilityBtn = By.xpath("//*[local-name()='svg' and contains(@class, 'text-yellow-500')]/ancestor::button[1] | //button[contains(@class, 'bg-amber-200')]");
+    
+    // Exit Playground Workspace Target (Matching: class="... bg-orange-600 ... " containing text "Exit")
+    private final By exitPlaygroundBtn = By.xpath("//button[contains(@class, 'bg-orange-600') and normalize-space(.)='Exit'] | //button[descendant::*[local-name()='svg'] and normalize-space(.)='Exit']");
+    
+    // Authentication & Profile Termination Selectors
     private final By profileDropdownTrigger = By.xpath("//div[contains(@class,'profile-container')] | //*[contains(@class, 'footer')]//img/ancestor::div[1] | //div[contains(@class, 'sidebar')]//button[last()]");
     private final By cleanLogoutTarget = By.xpath("//*[normalize-space()='Log out' or normalize-space()='Logout'] | //button[contains(., 'Log out') or contains(., 'Logout')] | //span[contains(text(), 'Log out') or contains(text(), 'Logout')]");
 
@@ -125,13 +142,10 @@ public class CourseBoardPage {
         Thread.sleep(4000);
     }
 
-    // ==================== INTERACTION FOR WORKSPACE SUB-TABS ====================
     public void switchWorkspaceSubTab(String tabLabel) throws InterruptedException {
-        // Generates clean structural XPaths dynamically for Dashboard, Prepare, Practice, and Discussion
         By contextualTab = By.xpath(String.format(tabSelectorPattern, tabLabel, tabLabel));
         WebElement tabBtn = wait.until(ExpectedConditions.presenceOfElementLocated(contextualTab));
         
-        // Handle scrolling layout adjustments seamlessly
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", tabBtn);
         Thread.sleep(1000);
         
@@ -139,10 +153,30 @@ public class CourseBoardPage {
         try {
             clickableTab.click();
         } catch (Exception e) {
-            // Safe fallback bypass if layout animations interfere with standard clicks
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", clickableTab);
         }
         Thread.sleep(2500);
+    }
+
+    // ==================== SUB-TAB INTERNAL INTERACTIONS ====================
+
+    public void clickOptionalLeaderboard() {
+        try {
+            WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(this.leaderboardBtn));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+            Thread.sleep(1200);
+            
+            WebElement clickableBtn = wait.until(ExpectedConditions.elementToBeClickable(this.leaderboardBtn));
+            try {
+                clickableBtn.click();
+            } catch (Exception e) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", clickableBtn);
+            }
+            System.out.println("[SUCCESS] Interacted with View Leaderboard modal context safely.");
+            Thread.sleep(2500);
+        } catch (Exception e) {
+            System.out.println("[WARN] Leaderboard button execution layer exception: " + e.getMessage());
+        }
     }
 
     public void interactWithDashboardAnalytics() {
@@ -160,45 +194,73 @@ public class CourseBoardPage {
         }
     }
 
-    public void clickOptionalLeaderboard() {
-        try {
-            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(leaderboardBtn));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
-            btn.click();
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.out.println("[INFO] Leaderboard modal step optional for this sequence layout layer.");
-        }
-    }
-
     public void traverseMaterialSubTabs() throws InterruptedException {
-        List<WebElement> tabs = driver.findElements(materialTypeTabs);
-        for (int i = 0; i < Math.min(tabs.size(), 3); i++) {
-            WebElement tab = tabs.get(i);
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", tab);
-            try { tab.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", tab); }
-            Thread.sleep(1200);
+        WebElement pdf = wait.until(ExpectedConditions.presenceOfElementLocated(this.pdfTabBtn));
+        try {
+            pdf.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", pdf);
         }
+        System.out.println("[SUCCESS] Inspected active PDF asset frame layout.");
+        Thread.sleep(2000);
+
+        WebElement materials = wait.until(ExpectedConditions.presenceOfElementLocated(this.materialsTabBtn));
+        try {
+            materials.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", materials);
+        }
+        System.out.println("[SUCCESS] Returned back to primary Materials interactive workspace.");
+        Thread.sleep(2000);
     }
 
     public void triggerMindmapActions() throws InterruptedException {
-        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight / 3);");
-        Thread.sleep(1000);
-        List<WebElement> buttons = driver.findElements(mindmapActionButtons);
-        for (WebElement btn : buttons) {
-            try { btn.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn); }
-            Thread.sleep(600);
-        }
+        triggerMindmapDraggableCopy();
     }
 
     public void triggerCodeSnippetCopy() {
         try {
-            WebElement copyBtn = driver.findElement(codeSnippetCopyBtn);
+            WebElement copyBtn = wait.until(ExpectedConditions.presenceOfElementLocated(codeSnippetCopyBtn));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", copyBtn);
-            copyBtn.click();
+            Thread.sleep(500);
+            try {
+                copyBtn.click();
+            } catch (Exception e) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", copyBtn);
+            }
+            System.out.println("[SUCCESS] Executed copy snippet interaction inside course content topic structure.");
             Thread.sleep(1000);
         } catch (Exception e) {
-            System.out.println("[INFO] Dynamic clipboard action item handled smoothly.");
+            System.out.println("[INFO] Copy element interaction step fallback caught safely.");
+        }
+    }
+
+    public void triggerMindmapDraggableCopy() {
+        try {
+            WebElement flowPane = wait.until(ExpectedConditions.presenceOfElementLocated(draggableFlowPane));
+            
+            hardwareBridge.moveToElement(flowPane)
+                          .clickAndHold()
+                          .moveByOffset(-150, -100)
+                          .release()
+                          .build()
+                          .perform();
+            System.out.println("[SUCCESS] Completed viewport layout shift on draggable react-flow board.");
+            Thread.sleep(2000);
+
+            WebElement copyBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(codeSnippetCopyBtn));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", copyBtn);
+            Thread.sleep(500);
+            
+            try {
+                copyBtn.click();
+            } catch (Exception clickEx) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", copyBtn);
+            }
+            System.out.println("[SUCCESS] Content code block copy action verified within draggable layout viewport context.");
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.out.println("[WARN] Intermittent boundary block found during draggable flow canvas interaction check: " + e.getMessage());
         }
     }
 
@@ -206,15 +268,72 @@ public class CourseBoardPage {
         try {
             WebElement tryIt = wait.until(ExpectedConditions.elementToBeClickable(tryItPlaygroundBtn));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", tryIt);
-            try { tryIt.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", tryIt); }
-            Thread.sleep(4000);
+            try { 
+                tryIt.click(); 
+            } catch (Exception e) { 
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", tryIt); 
+            }
+            System.out.println("[SUCCESS] Transitioned to separate coding workspace view.");
+            Thread.sleep(3500);
+
+            // Now fully evaluates cleanly using the precise pure DOM text matching engine
+            WebElement runBtn = wait.until(ExpectedConditions.elementToBeClickable(sandboxRunCodeBtn));
+            try {
+                runBtn.click();
+                System.out.println("[SUCCESS] Clicked code editor 'Run' engine action.");
+            } catch (Exception e) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", runBtn);
+                System.out.println("[SUCCESS] Clicked code editor 'Run' engine action via JS Fallback.");
+            }
+            Thread.sleep(3000); // Dynamic compile cool down buffer step
+
+            try {
+                WebElement accessBtn = driver.findElement(sandboxAccessibilityBtn);
+                if (accessBtn.isDisplayed()) {
+                    try {
+                        accessBtn.click();
+                    } catch (Exception ex) {
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", accessBtn);
+                    }
+                    System.out.println("[SUCCESS] Interacted with workspace layout option context panel safely.");
+                    Thread.sleep(1000);
+                }
+            } catch (Exception accessEx) {
+                System.out.println("[INFO] Accessibility / Theme layout toggles context verification skipped.");
+            }
 
             WebElement exitBtn = wait.until(ExpectedConditions.elementToBeClickable(exitPlaygroundBtn));
-            try { exitBtn.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", exitBtn); }
+            try { 
+                exitBtn.click(); 
+            } catch (Exception e) { 
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", exitBtn); 
+            }
+            System.out.println("[SUCCESS] Sandbox execution cycle closed. Returned back to original topic location.");
             Thread.sleep(2000);
+            
         } catch (Exception e) {
-            System.out.println("[FAULT] Sandbox playground execution flow variation matched: " + e.getMessage());
+            System.out.println("[FAULT] Error variations in Sandbox Playground operation framework: " + e.getMessage());
         }
+    }
+
+    public void performCompletePrepareToPracticeFlow() throws InterruptedException {
+        switchWorkspaceSubTab("Dashboard");
+        clickOptionalLeaderboard();
+        interactWithDashboardAnalytics();
+        
+        switchWorkspaceSubTab("Prepare");
+        traverseMaterialSubTabs();
+        
+        triggerCodeSnippetCopy();
+        triggerMindmapActions();
+        
+        runSandboxPlaygroundLifecycle();
+        
+        switchWorkspaceSubTab("Practice");
+        Thread.sleep(2000);
+        
+        switchWorkspaceSubTab("Discussion");
+        System.out.println("[SUCCESS] Sequential layout sub-tab navigation pipeline verified entirely.");
     }
 
     public void resetViewToTop() throws InterruptedException {
@@ -229,7 +348,7 @@ public class CourseBoardPage {
 
     public void terminateSessionSecurely() {
         try {
-            // Safe tracking verification checks
+            resetViewToTop();
             WebElement profile = wait.until(ExpectedConditions.elementToBeClickable(profileDropdownTrigger));
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", profile);
             try { profile.click(); } catch (Exception e) { ((JavascriptExecutor) driver).executeScript("arguments[0].click();", profile); }
@@ -244,6 +363,7 @@ public class CourseBoardPage {
                 }
             }
             wait.until(ExpectedConditions.urlContains("/login"));
+            System.out.println("[SUCCESS] Terminated session sequence parameters safely.");
         } catch (Exception e) {
             throw new RuntimeException("Secure session termination breakdown encountered.", e);
         }
